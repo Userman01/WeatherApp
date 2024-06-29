@@ -7,7 +7,7 @@
 
 import UIKit
 
-final class MAinBuilder {
+final class MainBuilder {
     
     func build() -> UIViewController {
         let presenter = MainPresenter()
