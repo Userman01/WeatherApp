@@ -9,31 +9,33 @@ import Foundation
 
 final class MainProvider {
     
-    var networkProvider: NetworkProviderProtocol = NetworkProvider()
+    let networkProvider: NetworkProviderProtocol = NetworkProvider()
     
-    func getRequestWeather(searchText: String?, completion: @escaping (Result<MainModel, Error>) -> ()) {
-        getRequestGeocoding(searchText: searchText) {[weak self] result in
-            switch result {
-            case let .success(results):
-                guard let result = results.first,
-                      let params = self?.getParametersRequestWeather(lat: result.lat, lon: result.lon)
-                else { return }
-                
-                let url = self?.url(params: params,
-                                    scheme: .https,
-                                    host: .weather,
-                                    path: .weather)
-                self?.networkProvider.request(url: url,
-                                              header: nil,
-                                              httpMethod: .get,
-                                              completion: completion)
-            case let .failure(error):
-                completion(.failure(error))
-            }
-        }
+    func getRequestWeather(lat: Double, lon: Double, completion: @escaping (Result<MainModel, Error>) -> ()) {
+        let params = getParametersRequestWeather(lat: lat, lon: lon)
+        let url = url(params: params,
+                      scheme: .https,
+                      host: .weather,
+                      path: .weather)
+        networkProvider.request(url: url,
+                                header: nil,
+                                httpMethod: .get,
+                                completion: completion)
     }
     
-    private func getRequestGeocoding(searchText: String?, completion: @escaping (Result<[GeocodingAPIModelElement], Error>) -> ()) {
+    func getRequestWeatherForecastForDays(lat: Double, lon: Double, completion: @escaping (Result<MainForecastForDaysModel, Error>) -> ()) {
+        let params = getParametersWeatherForecastForDays(lat: lat, lon: lon)
+        let url = url(params: params,
+                      scheme: .https,
+                      host: .weather,
+                      path: .forecast)
+        networkProvider.request(url: url,
+                                header: nil,
+                                httpMethod: .get,
+                                completion: completion)
+    }
+
+    func getRequestGeocoding(searchText: String?, completion: @escaping (Result<[GeocodingAPIModelElement], Error>) -> ()) {
         let params = getParametersGeocoding(searchText: searchText)
         let url = url(params: params,
                       scheme: .http,
@@ -49,7 +51,7 @@ final class MainProvider {
         var param: [String: String] = [:]
         param["lat"] = String(lat)
         param["lon"] = String(lon)
-        param["lang"] = "ru"
+        param["lang"] = LocationType.ru
         param["units"] = "metric"
         param["appid"] = APIKey.key
         return param
@@ -58,7 +60,18 @@ final class MainProvider {
     private func getParametersGeocoding(searchText: String?) -> [String: String] {
         var param: [String: String] = [:]
         param["q"] = searchText
-        param["limit"] = String(1)
+        param["limit"] = String(5)
+        param["appid"] = APIKey.key
+        return param
+    }
+    
+    private func getParametersWeatherForecastForDays(lat: Double, lon: Double) -> [String: String] {
+        var param: [String: String] = [:]
+        param["lat"] = String(lat)
+        param["lon"] = String(lon)
+        param["lang"] = LocationType.ru
+        param["units"] = "metric"
+        param["cnt"] = "24"
         param["appid"] = APIKey.key
         return param
     }

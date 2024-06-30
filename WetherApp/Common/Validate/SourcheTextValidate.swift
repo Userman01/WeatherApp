@@ -15,7 +15,8 @@ struct SeurcheTextValidate: ValidatorProtocol {
         return value
     }
     
+    // Заполнить при необходимости валидации
     private func getErrorText(_ value: String) -> String? {
-        return value
+        return nil
     }
 }

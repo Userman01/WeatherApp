@@ -30,7 +30,7 @@ final class NetworkProvider: NetworkProviderProtocol {
                     if let decode = self?.decodeJSON(type: T.self, data: data) {
                         completion(.success(decode))
                     } else {
-                        completion(.failure(NSError()))
+                        completion(.failure(NetworkError(errorMessage: "Error decode")))
                     }
                     
                 case let .failure(error):

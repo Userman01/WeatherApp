@@ -1,25 +1,19 @@
 //
-//  MainView.swift
+//  DetailView.swift
 //  WetherApp
 //
-//  Created by Петр Постников on 27.06.2024.
+//  Created by Петр Постников on 29.06.2024.
 //
 
 import UIKit
 
-final class MainView: UIView {
+final class DetailView: UIView {
     
     private enum ViewMetrics {
         static let layoutMargins = UIEdgeInsets(top: .zero, left: 16, bottom: .zero, right: 16)
     }
     
-    private var delegate: MainViewControllerDelegate?
-    
-    private lazy var refreshControl: UIRefreshControl = {
-        let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(refresh(sender:)), for: .valueChanged)
-        return refreshControl
-    }()
+    private var delegate: DetailViewControllerDelegate?
     
     private lazy var tableView: UITableView = {
         let tableView = UITableView()
@@ -27,14 +21,13 @@ final class MainView: UIView {
         tableView.backgroundColor = .clear
         tableView.contentInsetAdjustmentBehavior = .automatic
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.refreshControl = refreshControl
         return tableView
     }()
     
     init(frame: CGRect,
          tableViewDelegate: UITableViewDelegate,
          tableViewDataSource: UITableViewDataSource,
-         delegate: MainViewControllerDelegate) {
+         delegate: DetailViewControllerDelegate) {
         self.delegate = delegate
         super.init(frame: frame)
         setupLayout()
@@ -61,9 +54,5 @@ final class MainView: UIView {
             tableView.bottomAnchor.constraint(equalTo: safeAreaLayoutGuide.bottomAnchor)
         ])
     }
-    
-    @objc private func refresh(sender: UIRefreshControl) {
-        delegate?.didRefreshControl()
-        sender.endRefreshing()
-    }
 }
+
